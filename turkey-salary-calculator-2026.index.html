@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🇹🇷 Turkey Salary Calculator 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      min-height: 100vh;
+      padding: 32px 16px 48px;
+    }
+
+    .container { max-width: 760px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 28px; }
+    .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 14px; }
+    .header p  { font-size: 0.78rem; color: #6b7280; margin-top: 8px; }
+
+    /* ── Mode toggle ── */
+    .toggle-wrap { display: inline-flex; background: #e5e7eb; border-radius: 10px; padding: 4px; gap: 4px; }
+    .toggle-btn {
+      padding: 7px 22px; border-radius: 7px; border: none; cursor: pointer;
+      font-size: 0.85rem; font-weight: 500; background: transparent; color: #6b7280;
+      transition: all .15s;
+    }
+    .toggle-btn.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+      margin-bottom: 16px; overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 20px 10px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: #9ca3af; border-bottom: 1px solid #f3f4f6;
+    }
+    .card-body { padding: 18px 20px; }
+
+    /* ── Inputs ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    label { display: block; font-size: 0.83rem; font-weight: 500; margin-bottom: 6px; }
+    .input-wrap { position: relative; }
+    .input-prefix {
+      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; font-size: 0.85rem; pointer-events: none;
+    }
+    input[type=number] {
+      width: 100%; padding: 9px 12px 9px 28px; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-size: 0.9rem; background: #fff; color: #1a1a2e;
+      outline: none; transition: border-color .15s, box-shadow .15s;
+      -moz-appearance: textfield;
+    }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=number]:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+    input.no-prefix { padding-left: 12px; }
+    .info-bar {
+      margin-top: 14px; background: #f8f9fb; border-radius: 8px;
+      padding: 10px 14px; font-size: 0.83rem; color: #6b7280; display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .info-bar strong { color: #1a1a2e; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+    .kpi-card {
+      background: #fff; border-radius: 12px; padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+    }
+    .kpi-card.highlight-green  { outline: 2px solid #22c55e; }
+    .kpi-card.highlight-orange { outline: 2px solid #f97316; }
+    .kpi-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; margin-bottom: 6px; }
+    .kpi-badge { font-size: 0.65rem; font-weight: 700; margin-left: 5px; }
+    .kpi-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+    .kpi-value.green  { color: #22c55e; }
+    .kpi-value.orange { color: #f97316; }
+    .kpi-sub { font-size: 0.72rem; color: #9ca3af; margin-top: 4px; }
+
+    /* ── Breakdown table ── */
+    .section-label {
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: #9ca3af; margin-bottom: 10px; margin-top: 4px;
+    }
+    .breakdown-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.85rem;
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row.total { font-weight: 600; padding-top: 12px; border-bottom: none; }
+    .breakdown-val { text-align: right; }
+    .breakdown-val strong { display: block; }
+    .breakdown-val span { font-size: 0.75rem; color: #9ca3af; }
+
+    /* ── Monthly table ── */
+    .toggle-detail-btn {
+      font-size: 0.75rem; padding: 5px 12px; border: 1px solid #e5e7eb;
+      border-radius: 6px; background: #fff; cursor: pointer; color: #6b7280;
+      transition: background .15s;
+    }
+    .toggle-detail-btn:hover { background: #f3f4f6; }
+    .table-wrap { overflow-x: auto; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    th {
+      text-align: right; padding: 8px 8px 8px 0; font-weight: 600;
+      color: #9ca3af; border-bottom: 1px solid #e5e7eb; white-space: nowrap;
+    }
+    th:first-child { text-align: left; }
+    td { text-align: right; padding: 7px 8px 7px 0; border-bottom: 1px solid #f3f4f6; }
+    td:first-child { text-align: left; font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8f9fb; }
+    .red  { color: #ef4444; }
+    .green-text { color: #22c55e; font-weight: 600; }
+    tfoot td { font-weight: 700; border-top: 2px solid #e5e7eb; border-bottom: none; padding-top: 10px; }
+
+    .card-header-row { display: flex; justify-content: space-between; align-items: center; }
+    .footer { text-align: center; font-size: 0.72rem; color: #9ca3af; margin-top: 8px; }
+
+    @media (max-width: 560px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>&#127481;&#127479; Turkey Salary Calculator 2026</h1>
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="btn-g2n" onclick="setMode('g2n')">Gross &rarr; Net</button>
+      <button class="toggle-btn"        id="btn-n2g" onclick="setMode('n2g')">Net &rarr; Gross</button>
+    </div>
+    <p id="mode-desc">Enter a gross salary to compute net pay and total employer cost</p>
+  </div>
+
+  <!-- Inputs -->
+  <div class="card">
+    <div class="card-header">Parameters</div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div>
+          <label id="salary-label">Annual Gross Salary (EUR)</label>
+          <div class="input-wrap">
+            <span class="input-prefix">&euro;</span>
+            <input type="number" id="salary-input" value="60000" min="0" oninput="recalc()" />
+          </div>
+        </div>
+        <div>
+          <label>EUR / TRY Exchange Rate</label>
+          <div class="input-wrap">
+            <input type="number" id="eur-try" value="53" step="0.5" min="1" class="no-prefix" oninput="recalc()" />
+          </div>
+        </div>
+      </div>
+      <div class="info-bar" id="info-bar"></div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card" id="kpi-gross">
+      <div class="kpi-label">Annual Gross <span class="kpi-badge" id="gross-badge" style="color:#f97316"></span></div>
+      <div class="kpi-value" id="kpi-gross-eur"></div>
+      <div class="kpi-sub"  id="kpi-gross-try"></div>
+    </div>
+    <div class="kpi-card" id="kpi-net">
+      <div class="kpi-label">Annual Net <span class="kpi-badge" id="net-badge" style="color:#22c55e"></span></div>
+      <div class="kpi-value green" id="kpi-net-eur"></div>
+      <div class="kpi-sub" id="kpi-net-try"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Total Employer Cost</div>
+      <div class="kpi-value orange" id="kpi-er-eur"></div>
+      <div class="kpi-sub"         id="kpi-er-try"></div>
+    </div>
+  </div>
+
+  <!-- Deductions Breakdown -->
+  <div class="card">
+    <div class="card-header">Annual Deductions Breakdown</div>
+    <div class="card-body">
+      <div class="section-label">Employee Deductions</div>
+      <div id="emp-rows"></div>
+      <div class="breakdown-row total" id="emp-total-row"></div>
+
+      <div class="section-label" style="margin-top:20px">Employer Contributions</div>
+      <div id="er-rows"></div>
+      <div class="breakdown-row total" id="er-total-row"></div>
+    </div>
+  </div>
+
+  <!-- Monthly Breakdown -->
+  <div class="card">
+    <div class="card-header card-header-row">
+      <span>Monthly Breakdown</span>
+      <button class="toggle-detail-btn" id="toggle-monthly" onclick="toggleMonthly()">Show details</button>
+    </div>
+    <div class="card-body" id="monthly-section" style="display:none">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Gross &#8378;</th>
+              <th>SSI+Unempl.</th>
+              <th>Income Tax</th>
+              <th>Stamp Tax</th>
+              <th>Total Ded.</th>
+              <th>Net &#8378;</th>
+              <th>Net &euro;</th>
+            </tr>
+          </thead>
+          <tbody id="monthly-tbody"></tbody>
+          <tfoot id="monthly-tfoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Based on 2026 Turkish statutory deductions per CottGroup &mdash;
+    SSI ceiling &#8378;297,270/mo &mdash; Exchange rate is indicative only.
+  </div>
+</div>
+
+<script>
+// Constants
+var SSI_EMP_RATE   = 0.14;
+var UNEMP_EMP_RATE = 0.01;
+var SSI_ER_RATE    = 0.2175;
+var UNEMP_ER_RATE  = 0.02;
+var STAMP_RATE     = 0.00759;
+var SSI_CEIL       = 297270;
+var STAMP_EXEMPT   = 250.70;
+
+var IT_EXEMPT = [
+  4211.33,4211.33,4211.33,4211.33,4211.33,4211.33,
+  4537.75,
+  5615.10,5615.10,5615.10,5615.10,5615.10
+];
+var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function cumTax(b) {
+  if (b <= 0)        return 0;
+  if (b <= 190000)   return b * 0.15;
+  if (b <= 400000)   return 28500  + (b - 190000)  * 0.20;
+  if (b <= 1500000)  return 70500  + (b - 400000)  * 0.27;
+  if (b <= 5300000)  return 367500 + (b - 1500000) * 0.35;
+  return                    1697500 + (b - 5300000) * 0.40;
+}
+
+function computeMonths(mgross) {
+  var rows = []; var cumBase = 0; var cumT = 0;
+  for (var i = 0; i < 12; i++) {
+    var ssiBase  = Math.min(mgross, SSI_CEIL);
+    var ssiEmp   = ssiBase * SSI_EMP_RATE;
+    var unempEmp = ssiBase * UNEMP_EMP_RATE;
+    var itBase   = mgross - ssiEmp - unempEmp;
+    cumBase += itBase;
+    var newCT    = cumTax(cumBase);
+    var itGross  = newCT - cumT; cumT = newCT;
+    var itPay    = Math.max(0, itGross - IT_EXEMPT[i]);
+    var stPay    = Math.max(0, mgross * STAMP_RATE - STAMP_EXEMPT);
+    var totDed   = ssiEmp + unempEmp + itPay + stPay;
+    var net      = mgross - totDed;
+    var ssiEr    = ssiBase * SSI_ER_RATE;
+    var unempEr  = ssiBase * UNEMP_ER_RATE;
+    rows.push({ ssiEmp:ssiEmp, unempEmp:unempEmp, itPay:itPay, stPay:stPay,
+                totDed:totDed, net:net, ssiEr:ssiEr, unempEr:unempEr,
+                erCost: mgross + ssiEr + unempEr });
+  }
+  return rows;
+}
+
+function findGrossFromNet(targetNet) {
+  if (targetNet <= 0) return 0;
+  var lo = 0; var hi = targetNet * 4;
+  for (var i = 0; i < 80; i++) {
+    var mid = (lo + hi) / 2;
+    var n = computeMonths(mid).reduce(function(s,r){ return s + r.net; }, 0);
+    if (n < targetNet) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+var mode = 'g2n';
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-g2n').className = 'toggle-btn' + (m==='g2n' ? ' active' : '');
+  document.getElementById('btn-n2g').className = 'toggle-btn' + (m==='n2g' ? ' active' : '');
+  document.getElementById('salary-label').textContent =
+    m === 'g2n' ? 'Annual Gross Salary (EUR)' : 'Annual Net Salary (EUR)';
+  document.getElementById('mode-desc').textContent =
+    m === 'g2n'
+      ? 'Enter a gross salary to compute net pay and total employer cost'
+      : 'Enter a net salary to find the required gross and total employer cost';
+  recalc();
+}
+
+var fmt  = function(v) { return Math.round(v).toLocaleString('en-US'); };
+var fmtT = function(v) { return '\u20BA' + fmt(v); };
+var fmtE = function(v) { return '\u20AC' + fmt(v); };
+var fmtP = function(v) { return v.toFixed(1) + '%'; };
+
+function rowHTML(label, tryVal, eurVal) {
+  return '<div class="breakdown-row"><span>' + label + '</span>' +
+    '<div class="breakdown-val"><strong>' + fmtT(tryVal) + '</strong>' +
+    '<span>(' + fmtE(eurVal) + ')</span></div></div>';
+}
+
+function recalc() {
+  var salaryInput = +document.getElementById('salary-input').value || 0;
+  var eurTry      = +document.getElementById('eur-try').value      || 1;
+
+  var mgross;
+  if (mode === 'g2n') mgross = (salaryInput * eurTry) / 12;
+  else                mgross = findGrossFromNet(salaryInput * eurTry);
+
+  var rows   = computeMonths(mgross);
+  var sum    = function(fn) { return rows.reduce(function(s,r){ return s + fn(r); }, 0); };
+
+  var grossTRY    = mgross * 12;
+  var grossEUR    = grossTRY / eurTry;
+  var netTRY      = sum(function(r){ return r.net; });
+  var netEUR      = netTRY / eurTry;
+  var ssiEmp      = sum(function(r){ return r.ssiEmp; });
+  var unempEmp    = sum(function(r){ return r.unempEmp; });
+  var itPay       = sum(function(r){ return r.itPay; });
+  var stPay       = sum(function(r){ return r.stPay; });
+  var totDed      = sum(function(r){ return r.totDed; });
+  var ssiEr       = sum(function(r){ return r.ssiEr; });
+  var unempEr     = sum(function(r){ return r.unempEr; });
+  var erCostTRY   = sum(function(r){ return r.erCost; });
+  var erCostEUR   = erCostTRY / eurTry;
+  var dedRate     = grossTRY > 0 ? (totDed / grossTRY) * 100 : 0;
+  var overhead    = grossTRY > 0 ? ((erCostTRY / grossTRY) - 1) * 100 : 0;
+
+  document.getElementById('info-bar').innerHTML =
+    '<span>Monthly gross:</span> <strong>' + fmtT(mgross) + '</strong> <span>/</span> <strong>' + fmtE(grossEUR/12) + ' / month</strong>';
+
+  var kpiGross = document.getElementById('kpi-gross');
+  var kpiNet   = document.getElementById('kpi-net');
+  if (mode === 'g2n') {
+    kpiGross.className = 'kpi-card';
+    kpiNet.className   = 'kpi-card highlight-green';
+    document.getElementById('gross-badge').textContent = '';
+    document.getElementById('net-badge').textContent   = '\u2190 Result';
+    document.getElementById('kpi-gross-eur').className = 'kpi-value';
+    document.getElementById('kpi-net-eur').className   = 'kpi-value green';
+  } else {
+    kpiGross.className = 'kpi-card highlight-orange';
+    kpiNet.className   = 'kpi-card';
+    document.getElementById('gross-badge').textContent = '\u2190 Result';
+    document.getElementById('net-badge').textContent   = '';
+    document.getElementById('kpi-gross-eur').className = 'kpi-value orange';
+    document.getElementById('kpi-net-eur').className   = 'kpi-value';
+  }
+  document.getElementById('kpi-gross-eur').textContent = fmtE(grossEUR);
+  document.getElementById('kpi-gross-try').textContent = fmtT(grossTRY);
+  document.getElementById('kpi-net-eur').textContent   = fmtE(netEUR);
+  document.getElementById('kpi-net-try').textContent   = fmtT(netTRY) + ' \u00B7 ' + fmtP(100 - dedRate) + ' of gross';
+  document.getElementById('kpi-er-eur').textContent    = fmtE(erCostEUR);
+  document.getElementById('kpi-er-try').textContent    = fmtT(erCostTRY) + ' \u00B7 +' + fmtP(overhead) + ' overhead';
+
+  document.getElementById('emp-rows').innerHTML =
+    rowHTML('SSI Employee (14%)',                           ssiEmp,   ssiEmp/eurTry)   +
+    rowHTML('Unemployment Employee (1%)',                   unempEmp, unempEmp/eurTry) +
+    rowHTML('Income Tax (progressive, net of exemptions)',  itPay,    itPay/eurTry)    +
+    rowHTML('Stamp Tax (0.759%, net of exemptions)',        stPay,    stPay/eurTry);
+
+  document.getElementById('emp-total-row').innerHTML =
+    '<span>Total Employee Deductions</span>' +
+    '<div class="breakdown-val"><strong>' + fmtT(totDed) + '</strong>' +
+    '<span>(' + fmtE(totDed/eurTry) + ') \u00B7 ' + fmtP(dedRate) + '</span></div>';
+
+  document.getElementById('er-rows').innerHTML =
+    rowHTML('SSI Employer (21.75% with 2-pt discount)', ssiEr,   ssiEr/eurTry)   +
+    rowHTML('Unemployment Employer (2%)',               unempEr, unempEr/eurTry);
+
+  document.getElementById('er-total-row').innerHTML =
+    '<span>Total Employer Contributions</span>' +
+    '<div class="breakdown-val"><strong>' + fmtT(ssiEr+unempEr) + '</strong>' +
+    '<span>(' + fmtE((ssiEr+unempEr)/eurTry) + ')</span></div>';
+
+  var tbody = document.getElementById('monthly-tbody');
+  tbody.innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td>' + MONTHS[i] + '</td>' +
+      '<td>' + fmt(mgross) + '</td>' +
+      '<td class="red">' + fmt(r.ssiEmp + r.unempEmp) + '</td>' +
+      '<td class="red">' + fmt(r.itPay) + '</td>' +
+      '<td class="red">' + fmt(r.stPay) + '</td>' +
+      '<td class="red">' + fmt(r.totDed) + '</td>' +
+      '<td class="green-text">' + fmt(r.net) + '</td>' +
+      '<td class="green-text">' + fmt(r.net/eurTry) + '</td>' +
+      '</tr>';
+  }).join('');
+
+  document.getElementById('monthly-tfoot').innerHTML =
+    '<tr>' +
+    '<td>TOTAL</td>' +
+    '<td>' + fmt(grossTRY) + '</td>' +
+    '<td class="red">' + fmt(ssiEmp+unempEmp) + '</td>' +
+    '<td class="red">' + fmt(itPay) + '</td>' +
+    '<td class="red">' + fmt(stPay) + '</td>' +
+    '<td class="red">' + fmt(totDed) + '</td>' +
+    '<td class="green-text">' + fmt(netTRY) + '</td>' +
+    '<td class="green-text">' + fmt(netEUR) + '</td>' +
+    '</tr>';
+}
+
+function toggleMonthly() {
+  var sec = document.getElementById('monthly-section');
+  var btn = document.getElementById('toggle-monthly');
+  var open = sec.style.display === 'none';
+  sec.style.display = open ? 'block' : 'none';
+  btn.textContent   = open ? 'Hide details' : 'Show details';
+}
+
+recalc();
+</script>
+</body>
+</html>
